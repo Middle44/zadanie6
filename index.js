@@ -11,13 +11,26 @@ var OSM_layer = new TileLayer(
     source: new OSM()
   }
 );
-var MY_layer = new ImageLayer(
+var AllMyLayers = new ImageLayer(
   {
     extent: [17.84506885869866, 48.731926770588124, 17.93695929993104, 48.764736748435276],
     source: new ImageWMS(
       {
         url: 'http://localhost:8080/geoserver/ows?',
         params: { LAYERS: ['Blasko:Cesta', 'Blasko:Budova', 'Blasko:Chodnik', 'Blasko:Znacka', 'Blasko:Kos', 'Blasko:Park'] },
+        ratio: 1,
+        serverType: 'geoserver'
+      }
+    ),
+  }
+);
+var MyLayers = new ImageLayer(
+  {
+    extent: [17.84506885869866, 48.731926770588124, 17.93695929993104, 48.764736748435276],
+    source: new ImageWMS(
+      {
+        url: 'http://localhost:8080/geoserver/ows?',
+        params: { LAYERS: ['Blasko:Budova'] },
         ratio: 1,
         serverType: 'geoserver'
       }
@@ -34,7 +47,7 @@ var map = new Map(
     view: new View(
       {
         projection: 'EPSG:4326',
-        center: [17.888738, 48.746600],
+        center: [17.888000, 48.741500],
         zoom: 14
       }
     )
@@ -43,6 +56,7 @@ var map = new Map(
 //////////////////////////////////////////////////////
 //const checkedlayers
 var parser = new WMSCapabilities();
+var isTablevisible = 0;
 ////Funkcie//////////////////////////////////////////
 function AddTable() 
 {
@@ -51,40 +65,130 @@ function AddTable()
     return response.text();
   }).then(function (text) 
   {
-    var data = parser.read(text);
-    data.Capability.Layer.Layer.forEach(layer => 
-      {
-        //console.log(layer.Name, layer.Title, layer.queryable)
-      });
-    var table = "<th>Name</th><th>Queryable</th><th>Checkbox</th>";
-    var rows = data.Capability.Layer.Layer.length;
-    for (var r = 1; r < rows; r++) 
+    switch(isTablevisible) 
     {
-      table += '<h2>';
-      for (var c=1; c<=1; c++) 
+    case 1:
+      alert("Už si zobrazil všetky dostuplné vrstvy!");
+    break;
+    case 0:
+      var data = parser.read(text);
+      var table = "<th>Name</th><th>Queryable</th><th>Checkbox</th>";
+      var rows = data.Capability.Layer.Layer.length;
+      for (var r = 1; r < rows; r++) 
       {
-        //const checkbox = 
-        table += '<tr>'+'<td>'+data.Capability.Layer.Layer[r-1].Name+'</td>'+'<td>'+ data.Capability.Layer.Layer[r-1].queryable +'</td>'+
-        '<td>'+'<input class="layer-checkbox" id="layers-${index}" onclick="AddMYLayers()" type="checkbox"/>'+'</td>'+'</tr>';
+        table += '<h2>';
+        for (var c=1; c<=1; c++) 
+        {
+          table += '<tr>'+'<td>'+data.Capability.Layer.Layer[r-1].Name+'</td>'+'<td>'+ data.Capability.Layer.Layer[r-1].queryable +'</td>'+
+          '<td>'+`<input class="layer-checkbox" id="MyLayer${r}" onclick="AddMyLayers()" type="checkbox"/>`+'</td>'+'</tr>';
+          //'<td>'+`<input class="${r}" id="MyLayer${r}" onclick="AddLayer()" type="checkbox"/>`+'</td>'+'</tr>';
+        }
+        table += '</tr>';
       }
-      table += '</tr>'; 
+      document.body.insertAdjacentHTML('beforeend','<table id="tabulka">' + table + '</table>');
+      isTablevisible = 1;
+    break;
     }
-    document.body.insertAdjacentHTML('beforeend','<table border="1">' + table + '</table>')
   })
 }
-function AddMYLayers() 
+function AddAllMyLayers() 
 {
-  map.addLayer(MY_layer)
+  map.addLayer(AllMyLayers)
   var layers = [
-    MY_layer
+    AllMyLayers
   ];
 }
-function RemoveMYLayers() 
+function isChecked(stav) 
 {
-  map.removeLayer(MY_layer)
+  for (var i = 0; i < 9; i++) 
+  {
+    var MyLayer = document.getElementsByClassName('layer-checkbox')[i].id;
+    var stav = [MyLayer,document.getElementById(MyLayer).checked];
+    //console.log(MyLayer)
+    console.log(stav)
+  }
+} 
+function AddMyLayers() 
+{
+  //console.log(stav)
+  for (var i = 0; i < 9; i++) 
+  {
+    //var MyLayer = document.getElementsByClassName('layer-checkbox')[i].id;
+    //var stav = [MyLayer,document.getElementById(MyLayer).checked];
+    //var stav = [MyLayer];
+    //console.log(stav)
+    var MyLayer = document.getElementsByClassName('layer-checkbox')[i].id;
+    var stav = [
+      {
+        vrstva: MyLayer,
+        stav: document.getElementById(MyLayer).checked
+      }
+    ];
+    for(var a = 0; a < 9; a++)
+    {
+      switch(document.getElementById(stav[a].vrstva).checked) 
+      {
+        case true:
+          map.addLayer(MyLayers)
+          var layers = [
+            MyLayers
+          ];
+          //console.log(stav[a].vrstva)
+        break;
+        case false:
+          map.removeLayer(MyLayers)
+        break;
+      }
+    }
+    //console.log(stav[a].vrstva)
+  }
+  //console.log(stav)
+}
+function AddLayer() 
+{
+  switch (document.getElementById("MyLayer1").checked)
+  {
+    case true:
+    {
+      map.addLayer(MyLayers)
+      var layers = [
+        MyLayers
+      ];
+    }
+    break;
+    case false:
+    {
+      map.removeLayer(MyLayers)
+    }
+    break;
+  }
+}
+function RemoveAllMyLayers() 
+{
+  map.removeLayer(AllMyLayers)
 }
 function RemoveTable() 
 {
-  //var tbl = document.getElementById(tabulka);
-  //tbl.remove();
+  var x = document.getElementById("tabulka");
+  //switch(isTablevisible) 
+  //{
+    //case 1:
+      //x.style.display = "none";
+    //break;
+    //case 0:
+      //x.style.display = "none";
+    //break;
+  //}
+  isTablevisible = 0;
+  return x.style.display = "none";
+}
+/*
+var add = (function () {
+  var counter = 0;
+  return function () {counter += 1; return counter;}
+})();
+*/
+function pocet()
+{
+  console.log(isTablevisible) 
 }
