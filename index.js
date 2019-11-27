@@ -5,12 +5,14 @@ const TileLayer = ol.layer.Tile;
 const ImageWMS = ol.source.ImageWMS;
 const OSM = ol.source.OSM;
 const WMSCapabilities = ol.format.WMSCapabilities;
+var layers = [];
 //////////////////////////////////////////////////
-var OSM_layer = new TileLayer(
+var OSM_layer = [
+  new TileLayer(
   {
     source: new OSM()
-  }
-);
+  })
+];
 var AllMyLayers = new ImageLayer(
   {
     extent: [17.84506885869866, 48.731926770588124, 17.93695929993104, 48.764736748435276],
@@ -24,25 +26,9 @@ var AllMyLayers = new ImageLayer(
     ),
   }
 );
-var MyLayers = new ImageLayer(
-  {
-    extent: [17.84506885869866, 48.731926770588124, 17.93695929993104, 48.764736748435276],
-    source: new ImageWMS(
-      {
-        url: 'http://localhost:8080/geoserver/ows?',
-        params: { LAYERS: ['Blasko:Budova'] },
-        ratio: 1,
-        serverType: 'geoserver'
-      }
-    ),
-  }
-);
-var layers = [
-  OSM_layer
-];
 var map = new Map(
   {
-    layers: layers,
+    layers: OSM_layer,
     target: 'map',
     view: new View(
       {
@@ -54,7 +40,6 @@ var map = new Map(
   }
 );
 //////////////////////////////////////////////////////
-//const checkedlayers
 var parser = new WMSCapabilities();
 var isTablevisible = 0;
 ////Funkcie//////////////////////////////////////////
@@ -68,100 +53,80 @@ function AddTable()
     switch(isTablevisible) 
     {
     case 1:
-      alert("Už si zobrazil všetky dostuplné vrstvy!");
-    break;
+        alert("Už si zobrazil všetky dostuplné vrstvy!");
+        break;
     case 0:
-      var data = parser.read(text);
-      var table = "<th>Name</th><th>Queryable</th><th>Checkbox</th>";
-      var rows = data.Capability.Layer.Layer.length;
-      for (var r = 1; r < rows; r++) 
-      {
-        table += '<h2>';
-        for (var c=1; c<=1; c++) 
+        let data = parser.read(text);
+        let layername = data.Capability.Layer.Layer;
+        let table = "<th>Name</th><th>Queryable</th><th>Checkbox</th>";
+        for (let rows = 1; rows < layername.length; rows++)
         {
-          table += '<tr>'+'<td>'+data.Capability.Layer.Layer[r-1].Name+'</td>'+'<td>'+ data.Capability.Layer.Layer[r-1].queryable +'</td>'+
-          '<td>'+`<input class="layer-checkbox" id="MyLayer${r}" onclick="AddMyLayers()" type="checkbox"/>`+'</td>'+'</tr>';
-          //'<td>'+`<input class="${r}" id="MyLayer${r}" onclick="AddLayer()" type="checkbox"/>`+'</td>'+'</tr>';
+          const layer = new ImageLayer(
+            {
+                extent: [17.79569523402574, 48.71936026587261, 17.957725778672316, 48.79917418319719],
+                source: new ImageWMS(
+                {
+                  url: 'http://localhost:8080/geoserver/ows?',
+                  params: { LAYERS: [layername[rows].Name] },
+                  ratio: 1,
+                  serverType: 'geoserver'
+                }),
+            })
+            OSM_layer.push(layer)
+            table += '<tr>';
+            for (let stlpce = 1; stlpce <= 1; stlpce++) 
+            {
+                table += '<tr>' + '<td>' + layername[rows].Name + '</td>' + '<td>' + layername[rows].queryable + '</td>' + '<td>' + `<input class="checkbox-class" center id="checkbox-${rows - 1}" onclick="isChecked()" type = "checkbox"/>` + '</td>' + '</tr>';
+            }
+            table += '</tr>';
         }
-        table += '</tr>';
-      }
-      document.body.insertAdjacentHTML('beforeend','<table id="tabulka">' + table + '</table>');
-      isTablevisible = 1;
-    break;
+        document.body.insertAdjacentHTML('beforeend','<table id="tabulka">' + table + '</table>');
+        isTablevisible = 1;
+        break;
     }
   })
 }
+//var areAllLayersvisible = 0;
 function AddAllMyLayers() 
 {
-  map.addLayer(AllMyLayers)
-  var layers = [
-    AllMyLayers
-  ];
+    //switch(areAllLayersvisible) 
+    //{
+    //case 1:
+        //lert("Všetky dostupné vrstvy už sú v mape!");
+        //break;
+    //case 0:
+        map.addLayer(AllMyLayers)
+        OSM_layer = [AllMyLayers];
+        //areAllLayersvisible = 1;
+        //break;
+    //}
 }
-function isChecked(stav) 
+function isChecked() 
 {
-  for (var i = 0; i < 9; i++) 
+  const checkboxes = document.getElementsByClassName("checkbox-class");
+  const checboxArray = Array.from(checkboxes);
+  checboxArray.forEach(function whichOneIs(checkbox) 
   {
-    var MyLayer = document.getElementsByClassName('layer-checkbox')[i].id;
-    var stav = [MyLayer,document.getElementById(MyLayer).checked];
-    //console.log(MyLayer)
-    console.log(stav)
-  }
-} 
-function AddMyLayers() 
-{
-  //console.log(stav)
-  for (var i = 0; i < 9; i++) 
-  {
-    //var MyLayer = document.getElementsByClassName('layer-checkbox')[i].id;
-    //var stav = [MyLayer,document.getElementById(MyLayer).checked];
-    //var stav = [MyLayer];
-    //console.log(stav)
-    var MyLayer = document.getElementsByClassName('layer-checkbox')[i].id;
-    var stav = [
+    var index = checkbox.id.split('-')[1];
+    var integerindex = parseInt(index, 10);
+    var i = integerindex + 1;
+    const layer = OSM_layer[i];
+    if (checkbox.checked)
+    {
+      try 
       {
-        vrstva: MyLayer,
-        stav: document.getElementById(MyLayer).checked
-      }
-    ];
-    for(var a = 0; a < 9; a++)
-    {
-      switch(document.getElementById(stav[a].vrstva).checked) 
+        map.addLayer(layer)
+      } 
+      catch (error) 
       {
-        case true:
-          map.addLayer(MyLayers)
-          var layers = [
-            MyLayers
-          ];
-          //console.log(stav[a].vrstva)
-        break;
-        case false:
-          map.removeLayer(MyLayers)
-        break;
+        //console.log(error)
       }
-    }
-    //console.log(stav[a].vrstva)
-  }
-  //console.log(stav)
-}
-function AddLayer() 
-{
-  switch (document.getElementById("MyLayer1").checked)
-  {
-    case true:
+    } 
+    else 
     {
-      map.addLayer(MyLayers)
-      var layers = [
-        MyLayers
-      ];
+      map.removeLayer(layer)
     }
-    break;
-    case false:
-    {
-      map.removeLayer(MyLayers)
-    }
-    break;
-  }
+  })
 }
 function RemoveAllMyLayers() 
 {
@@ -169,7 +134,16 @@ function RemoveAllMyLayers()
 }
 function RemoveTable() 
 {
-  var x = document.getElementById("tabulka");
+  if (isTablevisible = 1)
+  {
+    var x = document.getElementById("tabulka");
+    isTablevisible = 0;
+    return x.style.display = "none";
+  }
+  else
+  {
+    alert("Už si skrzl tabuľku s dostupnými vrstvami dostuplné vrstvy!");
+  } 
   //switch(isTablevisible) 
   //{
     //case 1:
@@ -179,8 +153,6 @@ function RemoveTable()
       //x.style.display = "none";
     //break;
   //}
-  isTablevisible = 0;
-  return x.style.display = "none";
 }
 /*
 var add = (function () {
@@ -188,7 +160,3 @@ var add = (function () {
   return function () {counter += 1; return counter;}
 })();
 */
-function pocet()
-{
-  console.log(isTablevisible) 
-}
