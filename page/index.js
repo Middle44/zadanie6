@@ -87,20 +87,10 @@ function AddTable()
     }
   })
 }
-//var areAllLayersvisible = 0;
 function AddAllMyLayers() 
 {
-    //switch(areAllLayersvisible) 
-    //{
-    //case 1:
-        //lert("Všetky dostupné vrstvy už sú v mape!");
-        //break;
-    //case 0:
         map.addLayer(AllMyLayers)
         OSM_layer = [AllMyLayers];
-        //areAllLayersvisible = 1;
-        //break;
-    //}
 }
 function isChecked() 
 {
@@ -144,17 +134,39 @@ function RemoveTable()
   else
   {
     alert("Už si skrzl tabuľku s dostupnými vrstvami dostuplné vrstvy!");
-  } 
-  //switch(isTablevisible) 
-  //{
-    //case 1:
-      //x.style.display = "none";
-    //break;
-    //case 0:
-      //x.style.display = "none";
-    //break;
-  //}
+  }
 }
+map.on('singleclick', function(evt) 
+  {
+    document.getElementById('info').innerHTML = '';
+    console.log(AllMyLayers.values_.source)
+    var viewResolution = /** @type {number} */ (map.values_.view.getResolution());
+    var url = AllMyLayers.values_.source.getFeatureInfoUrl(evt.coordinate, viewResolution, 'EPSG:4326', {'INFO_FORMAT': 'text/html'});
+    if (url) 
+    {
+      fetch(url)
+        .then(function (response) { return response.text(); })
+        .then(function (html) 
+        {
+          document.getElementById('info').innerHTML = html;
+        });
+    }
+  }
+);
+map.on('pointermove', function(evt) 
+  {
+    if (evt.dragging) 
+    {
+      return;
+    }
+    var pixel = map.getEventPixel(evt.originalEvent);
+    var hit = map.forEachLayerAtPixel(pixel, function() 
+    {
+      return true;
+    });
+    map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+  }
+);
 /*
 var add = (function () {
   var counter = 0;

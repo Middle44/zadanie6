@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/css/ol.css" type="text/css">
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.1.1/build/ol.js"></script>
-    <title>Zadanie č.7</title>
+    <title>Zadanie č.8</title>
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
 </head>
 <body>
-    <h1>Zadanie č.7</h1>
+    <h1>Zadanie č.8</h1>
     <style>
         .map 
         {
@@ -27,9 +28,10 @@
     <h3>Vrstvy</h3>
     <button onclick="AddAllMyLayers()">Pridať</button>
     <button onclick="RemoveAllMyLayers()">Odobrať</button>
+    <div id="info">&nbsp;</div>
     <h4>Tabuľka</h4>
-    <button  onclick="AddTable()">Zobraz</button>
-    <button  onclick="RemoveTable()">Skry</button>
+    <button onclick="AddTable()">Zobraz</button>
+    <button onclick="RemoveTable()">Skry</button>
     <script src="./index.js"></script>
 </body>
 </html>
