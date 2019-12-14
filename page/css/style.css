@@ -1,4 +1,126 @@
 h1
 {
-    color: red;
+    font-size: 30px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 15px;
+}
+h2
+{
+    position: relative;
+    top: -80px;
+    z-index: 10;
+}
+h3
+{
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    font-size: 30px;
+    color: #fff;
+    font-weight: 300;
+    text-align: left;
+    margin-bottom: 10px;
+}
+h4
+{
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-size: 30px;
+    color: #fff;
+    font-weight: 300;
+    text-align: left;
+    margin-bottom: 10px;
+}
+button1
+{
+    position: absolute;
+    top: 38px;
+    left: 100px;
+    height:20px;
+    overflow-x:auto;
+    color: #fff;
+    margin-top: 0px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.3);
+}
+button2
+{
+    position: absolute;
+    top: 38px;
+    left: 150px;
+    height:20px;
+    overflow-x:auto;
+    color: #fff;
+    margin-top: 0px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.3);
+}
+button3
+{
+    position: absolute;
+    top: 38px;
+    right: 120px;
+    height:20px;
+    overflow-x:auto;
+    color: #fff;
+    margin-top: 0px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.3);
+}
+button4
+{
+    position: absolute;
+    top: 38px;
+    right: 160px;
+    height:20px;
+    overflow-x:auto;
+    color: #fff;
+    margin-top: 0px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.3);
+}
+table
+{
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    background-color: rgba(32, 32, 32, 0.452);
+}
+th
+{
+    height: 20px;
+    overflow-x: auto;
+    overflow-y: auto;
+    margin-top: 0px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.3);
+    padding: 20px 15px;
+    text-align: middle;
+    font-weight: 500;
+    font-size: 15px;
+    color: rgb(0, 0, 0);
+    text-transform: uppercase;
+}
+td
+{
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 15px;
+    text-align: middle;
+    vertical-align: middle;
+    font-weight: 300;
+    font-size: 15px;
+    color: rgb(0, 0, 0);
+    border-bottom: solid 1px rgba(255,255,255,0.1);
+}
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+body
+{
+    background: -webkit-linear-gradient(left, #25c481, #25b7c4);
+    background: linear-gradient(to right, #25c481, #25b7c4);
+    font-family: 'Roboto', sans-serif;
 }

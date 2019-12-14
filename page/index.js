@@ -59,7 +59,7 @@ function AddTable()
     case 0:
         let data = parser.read(text);
         let layername = data.Capability.Layer.Layer;
-        let table = "<th>Name</th><th>Queryable</th><th>Checkbox</th>";
+        let table = "<th>Vrstva</th><th>Dopytovateľnosť</th><th>Pridať<br>Odobrať</th>";
         for (let rows = 1; rows < layername.length; rows++)
         {
           const layer = new ImageLayer(
@@ -81,7 +81,7 @@ function AddTable()
             }
             table += '</tr>';
         }
-        document.body.insertAdjacentHTML('beforeend','<table id="tabulka">' + table + '</table>');
+        document.body.insertAdjacentHTML('beforeend','<table id="tabulka" cellpadding="0" cellspacing="0" border="0">' + table + '</table>');
         isTablevisible = 1;
         break;
     }
@@ -139,7 +139,6 @@ function RemoveTable()
 map.on('singleclick', function(evt) 
   {
     document.getElementById('info').innerHTML = '';
-    console.log(AllMyLayers.values_.source)
     var viewResolution = /** @type {number} */ (map.values_.view.getResolution());
     var url = AllMyLayers.values_.source.getFeatureInfoUrl(evt.coordinate, viewResolution, 'EPSG:4326', {'INFO_FORMAT': 'text/html'});
     if (url) 
