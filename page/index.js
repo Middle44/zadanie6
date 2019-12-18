@@ -54,36 +54,38 @@ function AddTable()
     switch(isTablevisible) 
     {
     case 1:
-        alert("Už si zobrazil všetky dostuplné vrstvy!");
-        break;
+      alert("Už si zobrazil všetky dostuplné vrstvy!");
+      break;
     case 0:
-        let data = parser.read(text);
-        let layername = data.Capability.Layer.Layer;
-        let table = "<th>Vrstva</th><th>Dopytovateľnosť</th><th>Pridať<br>Odobrať</th>";
-        for (let rows = 1; rows < layername.length; rows++)
+      let data = parser.read(text);
+      let layername = data.Capability.Layer.Layer;
+      let table = "<th>Vrstva</th><th>Dopytovateľnosť</th><th>Pridať<br>Odobrať</th>";
+      for (let rows = 1; rows < layername.length; rows++)
+      {
+        const layer = new ImageLayer(
+          {
+            extent: [17.79569523402574, 48.71936026587261, 17.957725778672316, 48.79917418319719],
+            source: new ImageWMS(
+              {
+                url: 'http://localhost:8080/geoserver/ows?',
+                params: { LAYERS: [layername[rows].Name] },
+                ratio: 1,
+                serverType: 'geoserver'
+              }),
+          }
+        )
+        OSM_layer.push(layer)
+        table += '<tr>';
+        for (let stlpce = 1; stlpce <= 1; stlpce++) 
         {
-          const layer = new ImageLayer(
-            {
-                extent: [17.79569523402574, 48.71936026587261, 17.957725778672316, 48.79917418319719],
-                source: new ImageWMS(
-                {
-                  url: 'http://localhost:8080/geoserver/ows?',
-                  params: { LAYERS: [layername[rows].Name] },
-                  ratio: 1,
-                  serverType: 'geoserver'
-                }),
-            })
-            OSM_layer.push(layer)
-            table += '<tr>';
-            for (let stlpce = 1; stlpce <= 1; stlpce++) 
-            {
-                table += '<tr>' + '<td>' + layername[rows].Name + '</td>' + '<td>' + layername[rows].queryable + '</td>' + '<td>' + `<input class="checkbox-class" center id="checkbox-${rows - 1}" onclick="isChecked()" type = "checkbox"/>` + '</td>' + '</tr>';
-            }
-            table += '</tr>';
+          table += '<tr>' + '<td>' + layername[rows].Name + '</td>' + '<td>' + layername[rows].queryable + '</td>' + '<td>' + `<input class="checkbox-class" center id="checkbox-${rows - 1}" onclick="isChecked()" type = "checkbox"/>` + '</td>' + '</tr>';
         }
-        document.body.insertAdjacentHTML('beforeend','<table id="tabulka" cellpadding="0" cellspacing="0" border="0">' + table + '</table>');
-        isTablevisible = 1;
-        break;
+        table += '</tr>';
+      }
+      //var t = document.getElementById("mytab");
+      document.body.insertAdjacentHTML('beforeend','<p><table id="tabulka" cellpadding="0" cellspacing="0" border="0">' + table + '</table></p>');
+      isTablevisible = 1;
+      break;
     }
   })
 }
@@ -166,6 +168,26 @@ map.on('pointermove', function(evt)
     map.getTargetElement().style.cursor = hit ? 'pointer' : '';
   }
 );
+////DIALOGOVE OKNO///////////////////////////////////////////
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("myBtn");
+var span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function() 
+{
+  modal.style.display = "block";
+}
+span.onclick = function() 
+{
+  modal.style.display = "none";
+}
+window.onclick = function(event) 
+{
+  if (event.target == modal) 
+  {
+    modal.style.display = "none";
+  }
+}
 /*
 var add = (function () {
   var counter = 0;
