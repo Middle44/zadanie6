@@ -44,12 +44,38 @@ var map = new Map(
 var parser = new WMSCapabilities();
 var isTablevisible = 0;
 ////Funkcie///////////////////////////////////////////
-function AddTable() 
+function functionURL() 
 {
-  fetch('http://localhost:8080/geoserver/Blasko/wms?service=WMS&version=1.3.0&request=GetCapabilities').then(function (response) 
+  const x = document.getElementById("myURL").value;
+  alert("URL úspešne vložená");
+  if (!x) 
+  {
+    alert('No url')
+    return;
+  }
+  Fun();
+}
+let capabilitiesJson;
+function Fun() 
+{  
+  const url = document.getElementById("myURL").value;
+  if (!url) 
+  {
+    return;
+  }
+  fetch(url,{mode:'cors'})
+  .then(function(response) 
   {
     return response.text();
-  }).then(function (text) 
+  })
+  .then(function(text) 
+  {
+    capabilitiesJson = parser.read(text);
+  });
+}
+function AddTable() 
+{
+  if(capabilitiesJson)
   {
     switch(isTablevisible) 
     {
@@ -57,8 +83,7 @@ function AddTable()
       alert("Už si zobrazil všetky dostuplné vrstvy!");
       break;
     case 0:
-      let data = parser.read(text);
-      let layername = data.Capability.Layer.Layer;
+      let layername = capabilitiesJson.Capability.Layer.Layer;
       let table = "<th>Vrstva</th><th>Dopytovateľnosť</th><th>Pridať<br>Odobrať</th>";
       for (let rows = 1; rows < layername.length; rows++)
       {
@@ -87,12 +112,12 @@ function AddTable()
       isTablevisible = 1;
       break;
     }
-  })
+  }
 }
 function AddAllMyLayers() 
 {
-        map.addLayer(AllMyLayers)
-        OSM_layer = [AllMyLayers];
+  map.addLayer(AllMyLayers)
+  OSM_layer = [AllMyLayers];
 }
 function isChecked() 
 {
